@@ -6,7 +6,7 @@
 
 ## Einführung
 
-PSUntis ist ein [PowerShell-Modul PSUntis](https://www.powershellgallery.com/packages/PsUntis) für die Nutzung von Untis auf Kommandozeilenebene. 
+PSUntis ist ein [PowerShell-Modul](https://www.powershellgallery.com/packages/PsUntis) für die Nutzung von Untis auf Kommandozeilenebene. 
 
 + Das Cmdlet `Start-UntisExport` kapselt den Untis-Kommandozeilenbefehl für Datei-Exporte (GPU oder XML) und implementiert darüber hinaus folgende zusätzliche Annehmlichkeiten:
 
