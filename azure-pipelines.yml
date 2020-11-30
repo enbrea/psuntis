@@ -1,0 +1,61 @@
+pool:
+  vmImage: 'windows-2019'
+
+variables:
+- group: 'powershell-config'
+
+steps:
+- checkout: self
+  persistCredentials: true
+- task: DownloadSecureFile@1
+  displayName: 'Download Code Signing certificate'
+  name: Certificate
+  inputs:
+    secureFile: cert.pfx
+- task: PowerShell@2
+  displayName: 'Get Version Number'
+  inputs:
+    filePath: 'azure-gitversion.ps1'
+    failOnStderr: true
+    pwsh: true
+- task: PowerShell@2
+  displayName: 'Update Module Version'
+  inputs:
+    targetType: 'inline'
+    script: |
+      Update-ModuleManifest -Path $(Build.SourcesDirectory)/src/PsUntis/PsUntis.psd1 -ModuleVersion $(MajorVersion).$(MinorVersion).$(PatchVersion)
+    pwsh: true
+- task: PowerShell@2
+  displayName: 'Sign Module'
+  inputs:
+    targetType: 'inline'
+    script: |
+      $pswd = ConvertTo-SecureString $(CertificatePassword) -AsPlainText -Force
+      $cert = Get-PfxCertificate -FilePath $(Certificate.secureFilePath) -Password $pswd
+      Set-AuthenticodeSignature -FilePath $(Build.SourcesDirectory)/src/PsUntis/PsUntis.psm1 -Certificate $cert -TimestampServer http://timestamp.digicert.com
+      Set-AuthenticodeSignature -FilePath $(Build.SourcesDirectory)/src/PsUntis/PsUntis.psd1 -Certificate $cert -TimestampServer http://timestamp.digicert.com
+    pwsh: true
+- task: PowerShell@2
+  displayName: 'Create Catalog'
+  inputs:
+    targetType: 'inline'
+    script: |
+      New-FileCatalog -Path $(Build.SourcesDirectory)/src/PsUntis -CatalogFilePath $(Build.SourcesDirectory)/src/PsUntis/PsUntis.cat -CatalogVersion 2.0
+    pwsh: true
+- task: PowerShell@2
+  displayName: 'Sign Catalog'
+  inputs:
+    targetType: 'inline'
+    script: |
+      $pswd = ConvertTo-SecureString $(CertificatePassword) -AsPlainText -Force
+      $cert = Get-PfxCertificate -FilePath $(Certificate.secureFilePath) -Password $pswd
+      Set-AuthenticodeSignature $(Build.SourcesDirectory)/src/PsUntis/PsUntis.cat -Certificate $cert -TimestampServer http://timestamp.digicert.com
+    pwsh: true
+- task: PowerShell@2
+  displayName: 'Publish to PS Gallery'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  inputs:
+    targetType: 'inline'
+    script: |
+      Publish-Module -Path $(Build.SourcesDirectory)/src/PsUntis -NuGetApiKey $(NuGetApiKey)
+    pwsh: true
