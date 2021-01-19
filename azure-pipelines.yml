@@ -3,6 +3,7 @@ pool:
 
 variables:
 - group: 'powershell-config'
+- group: 'github-config'
 
 steps:
 - checkout: self
@@ -58,4 +59,16 @@ steps:
     targetType: 'inline'
     script: |
       Publish-Module -Path $(Build.SourcesDirectory)/src/PsUntis -NuGetApiKey $(NuGetApiKey)
+    pwsh: true
+- task: PowerShell@2
+  displayName: 'Push to GitHub'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  inputs:
+    targetType: 'inline'
+    script: |
+      git remote add github https://$(PAT)@github.com/stuebersystems/psuntis.git
+      git fetch github
+      git checkout .
+      git push github HEAD:main
+      git push --tags github HEAD:main
     pwsh: true
