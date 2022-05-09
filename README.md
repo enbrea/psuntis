@@ -1,8 +1,8 @@
 # PSUntis
 
 [![PowerShell Gallery - PSUntis](https://img.shields.io/badge/PowerShell%20Gallery-PsUntis-blue.svg)](https://www.powershellgallery.com/packages/PsUntis)
-[![Minimum Supported PowerShell Version](https://img.shields.io/badge/PowerShell-7-blue.svg)](https://github.com/stuebersystems/psuntis)
-[![Minimum Supported PowerShell Version](https://img.shields.io/badge/PowerShell-5.1-blue.svg)](https://github.com/stuebersystems/psuntis)
+[![Minimum Supported PowerShell Version](https://img.shields.io/badge/PowerShell-7-blue.svg)](https://github.com/enbrea/psuntis)
+[![Minimum Supported PowerShell Version](https://img.shields.io/badge/PowerShell-5.1-blue.svg)](https://github.com/enbrea/psuntis)
 
 ## Einführung
 
@@ -76,12 +76,8 @@ Vorgehensweise:
 
 ## Dokumentation
 
-Die Dokumentation der Cmdlets findest Du im [GitHub-Wiki](https://github.com/stuebersystems/psuntis/wiki).
+Die Dokumentation der Cmdlets findest Du im [GitHub-Wiki](https://github.com/enbrea/psuntis/wiki).
 
 ## Kann ich mithelfen?
 
 Ja, sehr gerne. Der beste Weg mitzuhelfen ist es, den Quellcode auszuprobieren, Rückmeldung per Issue-Tracker zu geben und/oder eigene Pull-Requests zu generieren. Oder schreibe uns einfach eine E-Mail unter enbrea@stueber.de.
-
-## Code of conduct (Verhaltensregeln)
-
-In diesem Projekt wurde der [STÜBER SYSTEMS Code of conduct](https://www.stueber.de/code-of-conduct.php) übernommen.
