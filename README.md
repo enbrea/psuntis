@@ -30,7 +30,7 @@ PSUntis läuft unter Microsoft PowerShell 7 und PowerShell 5.1. Eine kurze Einf�
 
 PowerShell 7 ist nicht Bestandteil von Windows, muss also explizit installiert werden:
 
-1. Lade die [aktuelle Windows-Version von PowerShell 7 auf GitHub](https://github.com/PowerShell/PowerShell/releases) herunter. In der Regel wird dies das MSI-Paket für Windows 64bit sein (z.B. PowerShell-7.0.3-win-x64.msi).
+1. Lade die [aktuelle Windows-Version von PowerShell 7 auf GitHub](https://github.com/PowerShell/PowerShell/releases) herunter. In der Regel wird dies das MSI-Paket für Windows 64bit sein (z.B. PowerShell-7.2.3-win-x64.msi).
 
 2. Starte das MSI-Paket auf Deinem Computer und folge den Anweisungen.
 
@@ -40,7 +40,7 @@ Die Ausführung von PowerShell-Skripten unter Windows 10 ist standardmäßig nic
 
 2. Tippe `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned ` ein und bestätige.
 
-Mehr Infos zum Cmdlet `Set-ExecutionPolicy` findest Du in der [Microsoft-Dokumentation](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy?view=powershell-6).
+Mehr Infos zum Cmdlet `Set-ExecutionPolicy` findest Du in der [Microsoft-Dokumentation](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy).
 
 ### Microsoft PowerShell 5.1
 
