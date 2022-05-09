@@ -1,8 +1,10 @@
+# PSUntis
+
 [![PowerShell Gallery - PSUntis](https://img.shields.io/badge/PowerShell%20Gallery-PsUntis-blue.svg)](https://www.powershellgallery.com/packages/PsUntis)
 [![Minimum Supported PowerShell Version](https://img.shields.io/badge/PowerShell-7-blue.svg)](https://github.com/enbrea/psuntis)
 [![Minimum Supported PowerShell Version](https://img.shields.io/badge/PowerShell-5.1-blue.svg)](https://github.com/enbrea/psuntis)
 
-# PSUntis
+## Einführung
 
 PSUntis ist ein [PowerShell-Modul](https://www.powershellgallery.com/packages/PsUntis) für die Nutzung von Untis auf Kommandozeilenebene. 
 
@@ -28,11 +30,11 @@ PSUntis läuft unter Microsoft PowerShell 7 und PowerShell 5.1. Eine kurze Einf�
 
 PowerShell 7 ist nicht Bestandteil von Windows, muss also explizit installiert werden:
 
-1. Lade die [aktuelle Windows-Version von PowerShell 7 auf GitHub](https://github.com/PowerShell/PowerShell/releases/latest) herunter. In der Regel wird dies das MSI-Paket für Windows 64bit sein (z.B. PowerShell-7.2.3-win-x64.msi).
+1. Lade die [aktuelle Windows-Version von PowerShell 7 auf GitHub](https://github.com/PowerShell/PowerShell/releases) herunter. In der Regel wird dies das MSI-Paket für Windows 64bit sein (z.B. PowerShell-7.2.3-win-x64.msi).
 
 2. Starte das MSI-Paket auf Deinem Computer und folge den Anweisungen.
 
-Die Ausführung von PowerShell-Skripten unter Windows 11 und 10 ist standardmäßig nicht erlaubt. Dies kann man als Administrator jedoch ändern:
+Die Ausführung von PowerShell-Skripten unter Windows 10 ist standardmäßig nicht erlaubt. Dies kann man als Administrator jedoch ändern:
 
 1. Starte PowerShell als Administrator: `Start > PowerShell > PowerShell 7 (x64)`
 
@@ -48,7 +50,7 @@ Mehr Infos zum Cmdlet `Set-ExecutionPolicy` findest Du in der [Microsoft-Dokumen
 
 2. Installiere das Windows Management Framework 5.1 (enthält Microsoft PowerShell 5.1): https://www.microsoft.com/en-us/download/details.aspx?id=54616
 
-Die Ausführung von PowerShell-Skripten unter Windows 11 und 10 ist standardmäßig nicht erlaubt. Dies kann man als Administrator jedoch ändern:
+Die Ausführung von PowerShell-Skripten unter Windows 10 ist standardmäßig nicht erlaubt. Dies kann man als Administrator jedoch ändern:
 
 1. Starte PowerShell als Administrator: `Start > Windows PowerShell > Windows PowerShell`
 
