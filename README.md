@@ -1,12 +1,12 @@
-# PSUntis
+# PsUntis
 
-[![PowerShell Gallery - PSUntis](https://img.shields.io/badge/PowerShell%20Gallery-PsUntis-blue.svg)](https://www.powershellgallery.com/packages/PsUntis)
+[![PowerShell Gallery - PsUntis](https://img.shields.io/badge/PowerShell%20Gallery-PsUntis-blue.svg)](https://www.powershellgallery.com/packages/PsUntis)
 [![Minimum Supported PowerShell Version](https://img.shields.io/badge/PowerShell-7-blue.svg)](https://github.com/enbrea/psuntis)
 [![Minimum Supported PowerShell Version](https://img.shields.io/badge/PowerShell-5.1-blue.svg)](https://github.com/enbrea/psuntis)
 
 ## Einführung
 
-PSUntis ist ein [PowerShell-Modul](https://www.powershellgallery.com/packages/PsUntis) für die Nutzung von Untis auf Kommandozeilenebene. 
+PsUntis ist ein [PowerShell-Modul](https://www.powershellgallery.com/packages/PsUntis) für die Nutzung von Untis auf Kommandozeilenebene. 
 
 + Das Cmdlet `Start-UntisExport` kapselt den Untis-Kommandozeilenbefehl für Datei-Exporte (GPU oder XML) und implementiert darüber hinaus folgende zusätzliche Annehmlichkeiten:
 
@@ -24,7 +24,7 @@ PSUntis ist ein [PowerShell-Modul](https://www.powershellgallery.com/packages/Ps
 
 ## Systemvoraussetzungen
 
-PSUntis läuft unter Microsoft PowerShell 7 und PowerShell 5.1. Eine kurze Einführung in PowerShell 7 (inklusive Abgrenzung zu Microsoft PowerShell 5.1) findet sich in folgendem [Blog-Artikel](https://blog.stueber.de/posts/powershell7-unter-windows-10/).
+PsUntis läuft unter Microsoft PowerShell 7 und PowerShell 5.1. Eine kurze Einführung in PowerShell 7 (inklusive Abgrenzung zu Microsoft PowerShell 5.1) findet sich in folgendem [Blog-Artikel](https://blog.stueber.de/posts/powershell7-unter-windows-10/).
 
 ### PowerShell 7
 
@@ -58,21 +58,29 @@ Die Ausführung von PowerShell-Skripten unter Windows 10 ist standardmäßig nic
 
 Mehr Infos zum Cmdlet `Set-ExecutionPolicy` findest Du in der [Microsoft-Dokumentation](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy?view=powershell-5.1).
 
-## PSUntis installieren
+## PsUntis installieren
 
 Vorgehensweise:
 
 1. Starte PowerShell (Microsoft PowerShell 7 oder PowerShell 5.1)
 
-2. Tippe `Install-Module PSUntis` ein und bestätige.
+2. Tippe `Install-Module PsUntis` ein und bestätige.
 
-## PSUntis aktualisieren
+## PsUntis aktualisieren
 
 Vorgehensweise:
 
 1. Starte PowerShell (Microsoft PowerShell 7 oder PowerShell 5.1)
 
-2. Tippe `Update-Module PSUntis` ein und bestätige.
+2. Tippe `Update-Module PsUntis` ein und bestätige.
+
+## Überprüfen, welche Version von PsUntis installiert ist
+
+Vorgehensweise:
+
+1. Starte PowerShell (Microsoft PowerShell 7 oder PowerShell 5.1)
+
+2. Tippe ` Get-InstalledModule PsUntis` ein und bestätige.
 
 ## Dokumentation
 
