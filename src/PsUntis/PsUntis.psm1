@@ -567,7 +567,7 @@ function RunUntisBackup{
 function GetUntisConsolePath {
     process
     {
-        $Versions = @("2023","2022","2021","2020","2019","2018","2017")
+        $Versions = @("2024","2023","2022","2021","2020","2019","2018","2017")
 
         for ($i=0; $i -lt $Versions.Count; $i++)
         {
