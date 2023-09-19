@@ -8,11 +8,26 @@ variables:
 steps:
 - checkout: self
   persistCredentials: true
-- task: DownloadSecureFile@1
-  displayName: 'Download Code Signing certificate'
-  name: Certificate
+- task: SSMClientToolsSetup@1
+  displayName: 'Setup DigiCert Tools'
   inputs:
-    secureFile: cert.pfx
+    APIKey: '$(SM_API_KEY)'
+- task: DownloadSecureFile@1
+  displayName: 'Download Client Authentication Certificate'
+  name: SM_CLIENT_CERT_FILE
+  inputs:
+    secureFile: ClientCert.p12
+- task: PowerShell@2
+  displayName: 'Prepare Code Signing'
+  inputs:
+    targetType: 'inline'
+    script: |
+      $env:PATH += ';C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64;C:\Program Files\DigiCert\DigiCert Keylocker Tools'
+      $env:SM_LOG_OUTPUT = 'console'
+      smctl credentials save $(SM_API_KEY) $(SM_CLIENT_CERT_PASSWORD)
+      smksp_cert_sync.exe
+    failOnStderr: true
+    pwsh: true
 - task: PowerShell@2
   displayName: 'Get Version Number'
   inputs:
@@ -31,10 +46,13 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $pswd = ConvertTo-SecureString $(CertificatePassword) -AsPlainText -Force
-      $cert = Get-PfxCertificate -FilePath $(Certificate.secureFilePath) -Password $pswd
-      Set-AuthenticodeSignature -FilePath $(Build.SourcesDirectory)/src/PsUntis/PsUntis.psm1 -Certificate $cert -TimestampServer http://timestamp.digicert.com
-      Set-AuthenticodeSignature -FilePath $(Build.SourcesDirectory)/src/PsUntis/PsUntis.psd1 -Certificate $cert -TimestampServer http://timestamp.digicert.com
+      $env:PATH += ';C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64;C:\Program Files\DigiCert\DigiCert Keylocker Tools'
+      $env:SM_HOST = '$(SM_HOST)'
+      $env:SM_CLIENT_CERT_FILE = '$(SM_CLIENT_CERT_FILE.secureFilePath)'
+      $env:SM_LOG_OUTPUT = 'console'
+      signtool.exe sign /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 /sha1 $(SM_CERT_FINGERPRINT) $(Build.SourcesDirectory)/src/PsUntis/PsUntis.psm1
+      signtool.exe sign /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 /sha1 $(SM_CERT_FINGERPRINT) $(Build.SourcesDirectory)/src/PsUntis/PsUntis.psd1
+    failOnStderr: true
     pwsh: true
 - task: PowerShell@2
   displayName: 'Create Catalog'
@@ -48,9 +66,12 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $pswd = ConvertTo-SecureString $(CertificatePassword) -AsPlainText -Force
-      $cert = Get-PfxCertificate -FilePath $(Certificate.secureFilePath) -Password $pswd
-      Set-AuthenticodeSignature $(Build.SourcesDirectory)/src/PsUntis/PsUntis.cat -Certificate $cert -TimestampServer http://timestamp.digicert.com
+      $env:PATH += ';C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64;C:\Program Files\DigiCert\DigiCert Keylocker Tools'
+      $env:SM_HOST = '$(SM_HOST)'
+      $env:SM_CLIENT_CERT_FILE = '$(SM_CLIENT_CERT_FILE.secureFilePath)'
+      $env:SM_LOG_OUTPUT = 'console'
+      signtool.exe sign /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 /sha1 $(SM_CERT_FINGERPRINT) $(Build.SourcesDirectory)/src/PsUntis/PsUntis.cat 
+    failOnStderr: true
     pwsh: true
 - task: PowerShell@2
   displayName: 'Publish to PS Gallery'
