@@ -44,7 +44,7 @@ Vorgehensweise:
 
 1. Starte PowerShell (Microsoft PowerShell 7 oder PowerShell 5.1)
 
-2. Tippe ` Get-InstalledModule PsUntis` ein und bestätige.
+2. Tippe `Get-InstalledModule PsUntis` ein und bestätige.
 
 ## Dokumentation
 
