@@ -2,94 +2,117 @@ pool:
   vmImage: 'windows-2022'
 
 variables:
+- group: 'code-sign-config'
 - group: 'powershell-config'
 - group: 'github-config'
 
-steps:
-- checkout: self
-  persistCredentials: true
-- task: SSMClientToolsSetup@1
-  displayName: 'Setup DigiCert Tools'
-  inputs:
-    APIKey: '$(SM_API_KEY)'
-- task: DownloadSecureFile@1
-  displayName: 'Download Client Authentication Certificate'
-  name: SM_CLIENT_CERT_FILE
-  inputs:
-    secureFile: ClientCert.p12
-- task: PowerShell@2
-  displayName: 'Prepare Code Signing'
-  inputs:
-    targetType: 'inline'
-    script: |
-      $env:PATH += ';C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64;C:\Program Files\DigiCert\DigiCert Keylocker Tools'
-      $env:SM_LOG_OUTPUT = 'console'
-      smctl credentials save $(SM_API_KEY) $(SM_CLIENT_CERT_PASSWORD)
-      smksp_cert_sync.exe
-    failOnStderr: true
-    pwsh: true
-- task: PowerShell@2
-  displayName: 'Get Version Number'
-  inputs:
-    filePath: 'azure-gitversion.ps1'
-    failOnStderr: true
-    pwsh: true
-- task: PowerShell@2
-  displayName: 'Update Module Version'
-  inputs:
-    targetType: 'inline'
-    script: |
-      Update-ModuleManifest -Path $(Build.SourcesDirectory)/src/PsUntis/PsUntis.psd1 -ModuleVersion $(MajorVersion).$(MinorVersion).$(PatchVersion)
-    pwsh: true
-- task: PowerShell@2
-  displayName: 'Sign Module'
-  inputs:
-    targetType: 'inline'
-    script: |
-      $env:PATH += ';C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64;C:\Program Files\DigiCert\DigiCert Keylocker Tools'
-      $env:SM_HOST = '$(SM_HOST)'
-      $env:SM_CLIENT_CERT_FILE = '$(SM_CLIENT_CERT_FILE.secureFilePath)'
-      $env:SM_LOG_OUTPUT = 'console'
-      signtool.exe sign /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 /sha1 $(SM_CERT_FINGERPRINT) $(Build.SourcesDirectory)/src/PsUntis/PsUntis.psm1
-      signtool.exe sign /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 /sha1 $(SM_CERT_FINGERPRINT) $(Build.SourcesDirectory)/src/PsUntis/PsUntis.psd1
-    failOnStderr: true
-    pwsh: true
-- task: PowerShell@2
-  displayName: 'Create Catalog'
-  inputs:
-    targetType: 'inline'
-    script: |
-      New-FileCatalog -Path $(Build.SourcesDirectory)/src/PsUntis -CatalogFilePath $(Build.SourcesDirectory)/src/PsUntis/PsUntis.cat -CatalogVersion 2.0
-    pwsh: true
-- task: PowerShell@2
-  displayName: 'Sign Catalog'
-  inputs:
-    targetType: 'inline'
-    script: |
-      $env:PATH += ';C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64;C:\Program Files\DigiCert\DigiCert Keylocker Tools'
-      $env:SM_HOST = '$(SM_HOST)'
-      $env:SM_CLIENT_CERT_FILE = '$(SM_CLIENT_CERT_FILE.secureFilePath)'
-      $env:SM_LOG_OUTPUT = 'console'
-      signtool.exe sign /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 /sha1 $(SM_CERT_FINGERPRINT) $(Build.SourcesDirectory)/src/PsUntis/PsUntis.cat 
-    failOnStderr: true
-    pwsh: true
-- task: PowerShell@2
-  displayName: 'Publish to PS Gallery'
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-  inputs:
-    targetType: 'inline'
-    script: |
-      Publish-Module -Path $(Build.SourcesDirectory)/src/PsUntis -NuGetApiKey $(NuGetApiKey)
-    pwsh: true
-- task: PowerShell@2
-  displayName: 'Push to GitHub'
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-  inputs:
-    targetType: 'inline'
-    script: |
-      git remote add github https://$(PAT)@github.com/enbrea/psuntis.git
-      git fetch github
-      git checkout .
-      git push github HEAD:main
-      git push --tags github HEAD:main
-    pwsh: true
+stages:
+
+- stage: BuildAndTest  
+  jobs:
+  - job: 
+    steps:
+    - checkout: self
+      persistCredentials: true
+    - task: DownloadSecureFile@1
+      displayName: 'Download Client Authentication Certificate'
+      name: SM_CLIENT_CERT_FILE
+      inputs:
+        secureFile: ClientCert.p12
+    - task: SSMClientToolsSetup@1
+      displayName: 'Setup DigiCert Tools'
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+      inputs:
+        APIKey: '$(SM_API_KEY)'
+    - task: PowerShell@2
+      displayName: 'Prepare DigiCert Code Signing'
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+      inputs:
+        targetType: 'inline'
+        script: |
+          $env:PATH += ';C:\Program Files\DigiCert\DigiCert Keylocker Tools'
+          smctl credentials save $(SM_API_KEY) $(SM_CLIENT_CERT_PASSWORD)
+          smksp_cert_sync.exe
+        failOnStderr: true
+        pwsh: true
+    - task: PowerShell@2
+      displayName: 'Get Version Number'
+      inputs:
+        filePath: 'azure-gitversion.ps1'
+        failOnStderr: true
+        pwsh: true
+    - task: PowerShell@2
+      displayName: 'Update Module Version'
+      inputs:
+        targetType: 'inline'
+        script: |
+          Update-ModuleManifest -Path $(Build.SourcesDirectory)/src/PsUntis/PsUntis.psd1 -ModuleVersion $(MajorVersion).$(MinorVersion).$(PatchVersion)
+        pwsh: true
+    - task: PowerShell@2
+      displayName: 'Sign Module'
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+      env:
+        SM_CLIENT_CERT_FILE : $(SM_CLIENT_CERT_FILE.secureFilePath)
+      inputs:
+        targetType: 'inline'
+        script: |
+          $env:PATH += ';C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64'
+          signtool.exe sign /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 /sha1 $(SM_CERT_FINGERPRINT) $(Build.SourcesDirectory)/src/PsUntis/PsUntis.psm1
+          signtool.exe sign /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 /sha1 $(SM_CERT_FINGERPRINT) $(Build.SourcesDirectory)/src/PsUntis/PsUntis.psd1
+        failOnStderr: true
+        pwsh: true
+    - task: PowerShell@2
+      displayName: 'Create Catalog'
+      inputs:
+        targetType: 'inline'
+        script: |
+          New-FileCatalog -Path $(Build.SourcesDirectory)/src/PsUntis -CatalogFilePath $(Build.SourcesDirectory)/src/PsUntis/PsUntis.cat -CatalogVersion 2.0
+        pwsh: true
+    - task: PowerShell@2
+      displayName: 'Sign Catalog'
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+      env:
+        SM_CLIENT_CERT_FILE : $(SM_CLIENT_CERT_FILE.secureFilePath)
+      inputs:
+        targetType: 'inline'
+        script: |
+          $env:PATH += ';C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64'
+          signtool.exe sign /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 /sha1 $(SM_CERT_FINGERPRINT) $(Build.SourcesDirectory)/src/PsUntis/PsUntis.cat 
+        failOnStderr: true
+        pwsh: true
+    - publish: '$(Build.ArtifactStagingDirectory)'
+      artifact: drop
+
+- stage: Deploy
+  jobs:
+  - job: 
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    steps:
+    - download: current
+      artifact: drop
+    - task: PowerShell@2
+      displayName: 'Publish to PS Gallery'
+      inputs:
+        targetType: 'inline'
+        script: |
+          Publish-Module -Path $(Build.SourcesDirectory)/src/PsUntis -NuGetApiKey $(NuGetApiKey)
+        pwsh: true
+
+- stage: GitHub
+  jobs:
+  - job: 
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    steps:
+    - checkout: self
+      persistCredentials: true
+    - task: PowerShell@2
+      displayName: 'Push to GitHub'
+      inputs:
+        targetType: 'inline'
+        script: |
+          git remote add github https://$(PAT)@github.com/enbrea/psuntis.git
+          git fetch github
+          git checkout .
+          git push github HEAD:main
+          git push --tags github HEAD:main
+        pwsh: true

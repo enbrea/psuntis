@@ -11,7 +11,7 @@ Import-LocalizedData -BindingVariable stringTable
     This cmdlet reads all defined terms from the Untis .gpn file and lists them. If no term is defined nothing is listed.
 
     .Parameter File
-    The file name of an Untis .gpn file.
+    The file name of an Untis .gpn file. This parameter is mandatory.
 
     .Example
     Get-UntisTerms -File example.gpn
@@ -64,10 +64,10 @@ function Get-UntisTerms {
     testing and always backup first.
 
     .Parameter File
-    The file name of an Untis .gpn file.
+    The file name of an Untis .gpn file. This parameter is mandatory.
 
     .Parameter ShortName
-    Name of the term.
+    Name of the term. This parameter is mandatory.
 
     .Example
     Set-UntisTermAsActive -File example.gpn -ShortName Periode1
@@ -134,15 +134,15 @@ function Set-UntisTermAsActive {
     The password as securestring for accessing the Untis database. This parameter is mandatory for database access.
 
     .Parameter Date
-    A date within a defined Untis term. This paremeter is optional and only needed if the Untis file (.gpn or .untis) or the
+    A date within a defined Untis term. This parameter is optional and only needed if the Untis file (.gpn or .untis) or the
 	Untis database defines more than one term.
 
     .Parameter BackupFile
-    The file name for the Untis backup file (.gpn or .untis). This paremeter is optional. By default a generated file name
+    The file name for the Untis backup file (.gpn or .untis). This parameter is optional. By default a generated file name
 	is used.
 
     .Parameter OutputFolder
-    The folder in which all export files are created. This paremeter is optional. By default the current folder is used.
+    The folder in which all export files are created. This parameter is mandatory.
 
     .Parameter OutputType
     The type of export data. Possible values are GPU, GPU001, ..., GPU021 and XML. Since this parameter is definend as array
@@ -197,7 +197,7 @@ function Start-UntisExport {
         [ValidateNotNullOrEmpty()]
         [string]
         $BackupFile,
-        [Parameter()]
+        [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
         [string]
         $OutputFolder,
@@ -308,7 +308,7 @@ function Start-UntisExport {
     The password as securestring for accessing the Untis database. This parameter is mandatory.
 
     .Parameter BackupFile
-    The file name for the Untis backup file (.gpn or .untis). This paremeter is mandatory.
+    The file name for the Untis backup file (.gpn or .untis). This parameter is mandatory.
 
     .Example
     Start-UntisBackup -SchoolNo 40042 -SchoolYear 2020-2021 -User Administrator -Password (ConvertTo-SecureString qwertz -AsPlainText -Force) -BackupFile c:\output\backup.gpn
@@ -337,7 +337,7 @@ function Start-UntisBackup{
         [ValidateNotNullOrEmpty()]
         [securestring]
         $Password,
-        [Parameter()]
+        [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
         [string]
         $BackupFile
@@ -567,7 +567,7 @@ function RunUntisBackup{
 function GetUntisConsolePath {
     process
     {
-        $Versions = @("2024","2023","2022","2021","2020","2019","2018","2017")
+        $Versions = @("2025","2024","2023","2022","2021","2020","2019","2018","2017")
 
         for ($i=0; $i -lt $Versions.Count; $i++)
         {
